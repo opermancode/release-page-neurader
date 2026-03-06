@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuRader | Push Suggestions</title>
+<link rel="icon" type="image/png" href="neurader.png">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+:root {
+  --bg: #050505;
+  --accent: #00ffaa;
+  --border: #1a1a1a;
+  --text-dim: #666;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+body {
+  background: var(--bg);
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  margin: 0; padding: 0;
+}
+
+nav {
+  padding: 1.5rem 6%;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+}
+
+.container { max-width: 800px; margin: 60px auto; padding: 0 6%; }
+
+/* The Terminal Suggestion Box */
+.terminal-card {
+  background: #0d0d0d;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(0,255,170,0.05);
+}
+
+.term-header {
+  background: #1a1a1a;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot { width: 12px; height: 12px; border-radius: 50%; }
+.r { background: #ff5f57; } .y { background: #ffbd2e; } .g { background: #28ca41; }
+
+.term-body { padding: 30px; font-family: var(--mono); }
+
+.code-line { margin-bottom: 20px; display: flex; align-items: flex-start; gap: 15px; }
+.line-num { color: #333; user-select: none; width: 20px; text-align: right; }
+
+.key { color: #7ec8e3; } /* Light Blue */
+.string { color: #c8e37e; } /* Light Green */
+.comment { color: #555; font-style: italic; }
+
+select, textarea, input {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid #222;
+  color: #c8e37e;
+  font-family: var(--mono);
+  padding: 8px;
+  border-radius: 4px;
+  width: 100%;
+}
+
+textarea { height: 120px; resize: vertical; }
+
+.submit-btn {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 12px 24px;
+  font-family: var(--mono);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 10px;
+}
+
+.submit-btn:hover {
+  background: var(--accent);
+  color: #000;
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="./index.html" style="color:white; text-decoration:none; font-weight:800;">NEURADER</a>
+  <a href="./index.html" style="color:var(--text-dim); text-decoration:none; font-size:0.8rem;">[ EXIT_EDITOR ]</a>
+</nav>
+
+<div class="container">
+  <div style="margin-bottom: 40px;">
+    <h1 style="font-size: 1.8rem; margin-bottom: 10px;">Push to Roadmap</h1>
+    <p style="color: var(--text-dim);">Submit your feature requests via the NeuRader Suggestion Engine.</p>
+  </div>
+
+  <div class="terminal-card">
+    <div class="term-header">
+      <div class="dot r"></div> <div class="dot y"></div> <div class="dot g"></div>
+      <span style="font-family:var(--mono); font-size:0.7rem; color:#888; margin-left:10px;">suggestion_payload.yaml</span>
+    </div>
+
+    <form action="https://formspree.io/f/mqeyzrre" method="POST" class="term-body">
+      
+      <div class="code-line">
+        <span class="line-num">01</span>
+        <div>
+          <span class="key">suggestion_type:</span> 
+          <select name="type">
+            <option value="feature">"NEW_FEATURE"</option>
+            <option value="integration">"INTEGRATION"</option>
+            <option value="bug">"PERFORMANCE_FIX"</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="code-line">
+        <span class="line-num">02</span>
+        <div style="width: 100%;">
+          <span class="key">description:</span> 
+          <span class="comment"># Describe the logic here</span>
+          <textarea name="message" placeholder="Enter details..." required></textarea>
+        </div>
+      </div>
+
+      <div class="code-line">
+        <span class="line-num">03</span>
+        <div style="width: 100%;">
+          <span class="key">reporter_identity:</span>
+          <input type="email" name="email" placeholder="admin@example.com">
+        </div>
+      </div>
+
+      <div class="code-line">
+        <span class="line-num">04</span>
+        <button type="submit" class="submit-btn">RUN PUSH_REQUEST</button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+</body>
+</html>
