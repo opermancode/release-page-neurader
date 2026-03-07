@@ -951,7 +951,7 @@ footer {
 
   <h1 class="fade-up delay-1">
     Every playbook run.<br>
-    <em>Fully visible.</em>
+    <em id="typewriter"></em><span class="cursor"></span>
   </h1>
 
   <p class="hero-sub fade-up delay-2">
@@ -1496,6 +1496,22 @@ document.querySelectorAll('.flow-step, .cmd-card, .feat-card, .distro-pill').for
   el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
   observer.observe(el);
 });
+
+// Typewriter effect
+const typewriterText = "Fully visible.";
+const typewriterElement = document.getElementById('typewriter');
+let typeIndex = 0;
+
+function typeWriter() {
+  if (typeIndex < typewriterText.length) {
+    typewriterElement.textContent += typewriterText.charAt(typeIndex);
+    typeIndex++;
+    setTimeout(typeWriter, 100);
+  }
+}
+
+// Start typing after hero animation
+setTimeout(typeWriter, 1000);
 </script>
 
 </body>
