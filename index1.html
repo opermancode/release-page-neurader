@@ -163,7 +163,7 @@ nav {
 }
 
 /* ══════════════════════════════════
-   HERO
+   HERO & 3D VIEWER
 ══════════════════════════════════ */
 .hero {
   min-height: 100vh;
@@ -175,6 +175,19 @@ nav {
   position: relative;
   text-align: center;
 }
+
+#plane-viewer-root {
+  width: 100%;
+  max-width: 800px;
+  height: 350px;
+  margin-top: -15px;
+  margin-bottom: -20px;
+  position: relative;
+  z-index: 2;
+  cursor: grab;
+}
+
+#plane-viewer-root:active { cursor: grabbing; }
 
 .hero-eyebrow {
   display: inline-flex;
@@ -318,6 +331,7 @@ nav {
   gap: 16px;
   justify-content: center;
   font-weight: 500;
+  flex-wrap: wrap;
 }
 
 .hero-note span { display: flex; align-items: center; gap: 6px; }
@@ -481,6 +495,7 @@ nav {
 
 .log-json-body {
   padding: 20px 24px;
+  overflow-x: auto;
 }
 
 .j-key { color: #7ec8e3; }
@@ -490,6 +505,7 @@ nav {
 .j-bool-fail { color: var(--red); }
 .j-dim { color: var(--text-dim); }
 .j-err { color: var(--red); }
+.log-json-body pre { margin: 0; font-family: inherit; }
 
 /* ══════════════════════════════════
    COMMANDS SECTION
@@ -914,13 +930,85 @@ footer {
   0%   { transform: scale(1); opacity: 0.6; }
   100% { transform: scale(2); opacity: 0; }
 }
+
+.cursor {
+  display: inline-block;
+  width: 0.15em;
+  height: 0.9em;
+  background-color: var(--accent);
+  vertical-align: -0.05em;
+  margin-left: 0.1em;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ══════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════ */
+@media (max-width: 900px) {
+  nav { position: sticky; top: 0; flex-direction: column; gap: 1rem; padding: 1rem 5%; }
+  .nav-right { flex-wrap: wrap; justify-content: center; gap: 1rem; }
+  .hero { padding: 60px 20px; }
+  .section { padding: 60px 20px; }
+  .cta-band { text-align: center; padding: 3rem 2rem; gap: 2rem; }
+  .cta-band p { margin-left: auto; margin-right: auto; }
+  .cta-term { width: 100%; }
+  .commands-grid { grid-template-columns: 1fr; }
+  .log-json-body pre { white-space: pre-wrap; word-break: break-word; }
+}
+
+@media (max-width: 600px) {
+  .hero h1 { font-size: 2.2rem; margin-bottom: 1.2rem; }
+  .hero-sub { font-size: 1rem; margin-bottom: 2rem; }
+  
+  .term-body { padding: 15px; }
+  .term-body code { font-size: 0.75rem; }
+  
+  nav { padding: 12px 5%; gap: 12px; }
+  .logo { font-size: 0.9rem; }
+  .logo-icon { width: 28px; height: 28px; }
+  .nav-right { gap: 8px 16px; }
+  .nav-right a { font-size: 0.7rem; }
+  .nav-badge { font-size: 0.6rem; padding: 2px 6px; }
+  
+  .section-title { font-size: 1.8rem; }
+  
+  .flow { grid-template-columns: 1fr; }
+  .flow::before { display: none; }
+  .flow-step { padding: 0 0 2rem; }
+  
+  .log-json { font-size: 0.65rem; }
+  .log-json-body { padding: 15px; }
+  
+  footer { flex-direction: column; gap: 1.5rem; text-align: center; }
+
+  #plane-viewer-root { height: 240px; margin-top: 0; margin-bottom: 0; }
+}
+
+@media (min-width: 1600px) {
+  nav {
+    padding-left: max(6%, calc(50% - 700px));
+    padding-right: max(6%, calc(50% - 700px));
+  }
+  .hero, .section, footer {
+    padding-left: max(6%, calc(50% - 700px));
+    padding-right: max(6%, calc(50% - 700px));
+  }
+  .divider {
+    margin-left: max(6%, calc(50% - 700px));
+    margin-right: max(6%, calc(50% - 700px));
+  }
+  .cta-band {
+    margin-left: max(6%, calc(50% - 700px));
+    margin-right: max(6%, calc(50% - 700px));
+  }
+}
 </style>
 </head>
 <body>
 
 <div class="grid-bg"></div>
 
-<!-- NAV -->
 <nav>
   <a href="#" class="logo">
     <div class="logo-icon">
@@ -938,27 +1026,29 @@ footer {
     <a href="#how-it-works">How It Works</a>
     <a href="#commands">Commands</a>
     <a href="#grafana">Grafana</a>
-    <a href="#">GitHub</a>
-    <span class="nav-badge">v0.1.0</span>
+    <a href="./docs.html">Docs</a>
+    <a href="./suggestions.html">Suggestions</a>
+    <span class="nav-badge">v0.2.0</span>
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-glow"></div>
 
   <div class="hero-eyebrow fade-up">Ansible Execution Monitor</div>
 
-  <h1 class="fade-up delay-1">
+  <div id="plane-viewer-root" class="fade-up delay-1"></div>
+
+  <h1 class="fade-up delay-2">
     Every playbook run.<br>
     <em id="typewriter"></em><span class="cursor"></span>
   </h1>
 
-  <p class="hero-sub fade-up delay-2">
+  <p class="hero-sub fade-up delay-3">
     NeuRader hooks into your Ansible controller and captures every playbook execution — which nodes ran, which succeeded, which failed, and exactly why. Zero ports. Zero daemons. One binary.
   </p>
 
-  <div class="install-terminal fade-up delay-3">
+  <div class="install-terminal fade-up delay-4">
     <div class="term-bar">
       <div class="term-dot r"></div>
       <div class="term-dot y"></div>
@@ -976,7 +1066,7 @@ footer {
     </div>
   </div>
 
-  <div class="hero-note fade-up delay-4">
+  <div class="hero-note fade-up delay-5">
     <span><i class="fas fa-check-circle"></i> Root required for init only</span>
     <span><i class="fas fa-check-circle"></i> 15MB static binary</span>
     <span><i class="fas fa-check-circle"></i> x86_64 · ARM64 · ARM32</span>
@@ -986,7 +1076,6 @@ footer {
 
 <div class="divider"></div>
 
-<!-- HOW IT WORKS -->
 <section class="section" id="how-it-works">
   <div class="section-label">How it works</div>
   <h2 class="section-title">Setup once.<br><span>Works forever.</span></h2>
@@ -1028,7 +1117,6 @@ footer {
 
 <div class="divider"></div>
 
-<!-- LOG FORMAT -->
 <section class="section">
   <div class="log-section">
     <div>
@@ -1112,7 +1200,6 @@ footer {
 
 <div class="divider"></div>
 
-<!-- COMMANDS -->
 <section class="section" id="commands">
   <div class="section-label">CLI Reference</div>
   <h2 class="section-title">Simple commands.<br><span>Full control.</span></h2>
@@ -1137,7 +1224,7 @@ footer {
     <div class="cmd-card">
       <div class="cmd-line"><span class="cmd-prompt">$</span> neurader clean</div>
       <h4>Purge Old Logs</h4>
-      <p>Manually delete logs older than your configured retention period. Also runs automatically via systemd timer or cron every 12 hours.</p>
+      <p>Manually delete logs older than your configured retention period. Also runs automatically via systemd timer or cron fallback every 12 hours.</p>
     </div>
     <div class="cmd-card">
       <div class="cmd-line"><span class="cmd-prompt">$</span> neurader push</div>
@@ -1169,7 +1256,6 @@ footer {
 
 <div class="divider"></div>
 
-<!-- GRAFANA -->
 <section class="section" id="grafana">
   <div class="grafana-layout">
     <div>
@@ -1257,7 +1343,6 @@ footer {
 
 <div class="divider"></div>
 
-<!-- PLATFORM SUPPORT -->
 <section class="section">
   <div class="section-label">Platform Support</div>
   <h2 class="section-title">Runs everywhere<br><span>Ansible runs.</span></h2>
@@ -1276,7 +1361,7 @@ footer {
     <div style="background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:1.5rem 2rem;">
       <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:0.8rem;">ARM64 · Graviton / Pi 4+</div>
       <div style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);margin-bottom:1rem;word-break:break-all;">neurader-linux-arm64</div>
-      <a href="https://neurader.operman.in/releases/latest/neurader-linux-arm64"
+      <a href="https://neurader.operman.in/neurader/releases/latest/neurader-linux-arm64"
          style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(0,255,170,0.25);color:var(--accent);text-decoration:none;padding:8px 16px;border-radius:4px;font-size:0.78rem;font-weight:700;transition:all 0.2s;"
          onmouseover="this.style.background='rgba(0,255,170,0.2)'" onmouseout="this.style.background='var(--accent-dim)'">
         <i class="fas fa-download"></i> Download
@@ -1285,7 +1370,7 @@ footer {
     <div style="background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:1.5rem 2rem;">
       <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:0.8rem;">ARM32 · Pi 2/3 / Embedded</div>
       <div style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);margin-bottom:1rem;word-break:break-all;">neurader-linux-arm</div>
-      <a href="https://neurader.operman.in/releases/latest/neurader-linux-arm"
+      <a href="https://neurader.operman.in/neurader/releases/latest/neurader-linux-arm"
          style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(0,255,170,0.25);color:var(--accent);text-decoration:none;padding:8px 16px;border-radius:4px;font-size:0.78rem;font-weight:700;transition:all 0.2s;"
          onmouseover="this.style.background='rgba(0,255,170,0.2)'" onmouseout="this.style.background='var(--accent-dim)'">
         <i class="fas fa-download"></i> Download
@@ -1296,45 +1381,8 @@ footer {
   <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text-dim);margin-bottom:3rem;display:flex;align-items:center;gap:10px;">
     <i class="fas fa-shield-halved" style="color:var(--accent)"></i>
     Verify integrity:
-    <a href="https://neurader.operman.in/releases/latest/checksums.sha256"
+    <a href="https://neurader.operman.in/neurader/releases/latest/checksums.sha256"
        style="color:var(--accent);text-decoration:none;">checksums.sha256</a>
-    &nbsp;·&nbsp; Always points to the latest release
-  </div>
-
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;margin-bottom:3rem;">
-    <div style="background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:1.5rem 2rem;">
-      <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:0.8rem;">x86_64 · Intel / AMD</div>
-      <div style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);margin-bottom:1rem;">neurader-linux-amd64</div>
-      <a href="https://neurader.operman.in/releases/latest/neurader-linux-amd64"
-         style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(0,255,170,0.25);color:var(--accent);text-decoration:none;padding:8px 16px;border-radius:4px;font-size:0.78rem;font-weight:700;transition:background 0.2s;"
-         onmouseover="this.style.background='rgba(0,255,170,0.2)'" onmouseout="this.style.background='var(--accent-dim)'">
-        <i class="fas fa-download"></i> Download
-      </a>
-    </div>
-    <div style="background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:1.5rem 2rem;">
-      <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:0.8rem;">ARM64 · Graviton / Pi 4+</div>
-      <div style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);margin-bottom:1rem;">neurader-linux-arm64</div>
-      <a href="https://neurader.operman.in/releases/latest/neurader-linux-arm64"
-         style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(0,255,170,0.25);color:var(--accent);text-decoration:none;padding:8px 16px;border-radius:4px;font-size:0.78rem;font-weight:700;transition:background 0.2s;"
-         onmouseover="this.style.background='rgba(0,255,170,0.2)'" onmouseout="this.style.background='var(--accent-dim)'">
-        <i class="fas fa-download"></i> Download
-      </a>
-    </div>
-    <div style="background:var(--card);border:1px solid var(--border2);border-radius:8px;padding:1.5rem 2rem;">
-      <div style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:0.8rem;">ARM32 · Pi 2/3 · Embedded</div>
-      <div style="font-family:var(--mono);font-size:0.75rem;color:var(--accent);margin-bottom:1rem;">neurader-linux-arm</div>
-      <a href="https://neurader.operman.in/releases/latest/neurader-linux-arm"
-         style="display:inline-flex;align-items:center;gap:8px;background:var(--accent-dim);border:1px solid rgba(0,255,170,0.25);color:var(--accent);text-decoration:none;padding:8px 16px;border-radius:4px;font-size:0.78rem;font-weight:700;transition:background 0.2s;"
-         onmouseover="this.style.background='rgba(0,255,170,0.2)'" onmouseout="this.style.background='var(--accent-dim)'">
-        <i class="fas fa-download"></i> Download
-      </a>
-    </div>
-  </div>
-
-  <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text-dim);margin-bottom:3rem;display:flex;align-items:center;gap:10px;">
-    <i class="fas fa-shield-halved" style="color:var(--accent)"></i>
-    Verify integrity:
-    <a href="https://neurader.operman.in/releases/latest/checksums.sha256" style="color:var(--accent);text-decoration:none;">checksums.sha256</a>
     &nbsp;·&nbsp; Always points to the latest release
   </div>
 
@@ -1379,7 +1427,6 @@ footer {
 
 <div class="divider"></div>
 
-<!-- FEATURES -->
 <section class="section">
   <div class="section-label">Design Principles</div>
   <h2 class="section-title">Built the right way.<br><span>No compromises.</span></h2>
@@ -1419,7 +1466,6 @@ footer {
   </div>
 </section>
 
-<!-- CTA -->
 <div class="cta-band">
   <div>
     <h2>Ready to see what your<br>Ansible is <span>actually doing?</span></h2>
@@ -1440,7 +1486,6 @@ footer {
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer>
   <a href="#" class="footer-logo">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -1453,9 +1498,91 @@ footer {
   <div class="footer-right">© 2026 NEURADER PROJECT · Omkar Jagtap</div>
 </footer>
 
+<script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.154.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.154.0/examples/jsm/"
+    }
+  }
+</script>
+
+<script type="module">
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+  const container = document.getElementById('plane-viewer-root');
+  
+  // Scene Setup
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+  camera.position.set(0, 0, 8);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  container.appendChild(renderer.domElement);
+
+  // Lighting
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+  scene.add(ambientLight);
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  directionalLight.position.set(3, 3, 3);
+  scene.add(directionalLight);
+
+  // Controls
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableZoom = false;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 2;
+
+  // Animation Mixer
+  let mixer;
+  const clock = new THREE.Clock();
+
+  // Load Model
+  const loader = new GLTFLoader();
+  loader.load('./basic_plane.glb', (gltf) => {
+    const model = gltf.scene;
+    model.scale.set(0.8, 0.8, 0.8);
+    scene.add(model);
+
+    // Auto-play all animations (propellers, etc.)
+    if (gltf.animations && gltf.animations.length > 0) {
+      mixer = new THREE.AnimationMixer(model);
+      gltf.animations.forEach((clip) => {
+        mixer.clipAction(clip).play();
+      });
+    }
+  }, undefined, (error) => {
+    console.error('Error loading 3D model:', error);
+    container.innerHTML = '<div style="color:var(--text-dim); display:flex; align-items:center; justify-content:center; height:100%; font-family:var(--mono); font-size:0.8rem;">Model Loading...</div>';
+  });
+
+  // Render Loop
+  function animate() {
+    requestAnimationFrame(animate);
+    const delta = clock.getDelta();
+    if (mixer) mixer.update(delta);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+
+  // Handle Resize
+  window.addEventListener('resize', () => {
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+  });
+
+  animate();
+</script>
+
 <script>
 function copyInstall(btn) {
-  const cmd = "sudo curl -L https://neurader.operman.in/releases/latest/neurader-linux-amd64 -o neurader && sudo chmod +x neurader && sudo ./neurader init";
+  const cmd = "sudo curl -L https://neurader.operman.in/neurader/releases/latest/neurader-linux-amd64 -o neurader && sudo chmod +x neurader && sudo ./neurader init";
   navigator.clipboard.writeText(cmd).then(() => {
     const icon = btn.querySelector('i');
     icon.className = "fas fa-check";
